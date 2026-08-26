@@ -2,9 +2,9 @@
 
 _This project is to be done in teams of 2._
 
-**NAME OF BOTH COLLABORATOR(S) HERE**
+**NAME OF BOTH COLLABORATOR(S) HERE: Gabriela Yaulli, Aurora Jiaxin Shen **
 
-**THE MASTERWORK YOU DREW FROM THE HAT:**
+**THE MASTERWORK YOU DREW FROM THE HAT: The Ocular Harpsichord**
 
 ---
 
