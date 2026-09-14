@@ -1,5 +1,5 @@
 # Interactive Prototyping: The Clock of Pi
-**NAMES OF COLLABORATORS HERE**
+**NAMES OF COLLABORATORS HERE** Edmond Kong (eck67) Gabriela Yaulli Herrera (cgy4)
 
 Does it feel like time is moving strangely during this semester?
 
@@ -158,6 +158,12 @@ You can look in `image.py` for an example of how to display an image on the scre
 
 \*\*\***Include a picture of your own Raspberry Pi displaying the piscreen.service with your unique MAC address. Additionally, please provide another picture showing the successful completion of the screen test.**\*\*\*
 
+<img src="piscreen_mac.jpg" height="400" />
+
+Successful screen test:
+
+<img src="screen_test.jpg" height="400" />
+
 
 ## Part D. 
 ### Set up the Display Clock Demo
@@ -193,6 +199,29 @@ We strongly discourage literal digital or analog clock display: Be creative.
 
 
 ** Insert ideas, sketches, [Verplank diagrams](https://ccrma.stanford.edu/courses/250a-fall-2004/IDSketchbok.pdf)), storyboards for your ideas **
+
+All three ideas below drop the hands-and-numbers face entirely. Instead of reading a time off the screen, you read a picture that has changed — the clock tells you where you are in the hour, the day, or the week by how much of something has accumulated or disappeared.
+
+### Idea 1 — Flower Clock
+A single flower shows three things at once:
+
+1. Petals: At midnight the flower has zero petals. One petal is added every hour, so the flower grows fuller as the day goes on and is at its fullest just before midnight, when it resets.
+2. Background color: The backdrop shifts between a bright daytime color and a dark night blue depending on how bright it actually is outside. This can be determined by a light sensor.
+3. Flower center: The center of the flower carries a small symbol to communicate the weather. A sun means its sunny, clouds for cloudy weather, and raindrops for rain.
+
+<img src="idea1.JPG" height="600" />
+
+### Idea 2 — Weekly View
+
+Instead of a single day, the whole week is on screen at once. Seven bars sit in a row labeled M through Su, and each bar's height shows how much of that day has passed. A completed day is a full-height bar, the current day is partially filled, and days that haven't happened yet are empty. Background color and a small corner icon carry day/night and weather, the same way they do in Idea 1.
+
+<img src="idea2.JPG" height="600" />
+
+### Idea 3 — Weekend Countdown
+
+A face sits behind five "prison bars," one per weekday. The bars disappear one at a time as the weekdays pass. So the face is fully caged at Monday 12:00am, half-visible by Wednesday evening, and completely free from Saturday 12am through Sunday 11:59pm. During the weekend the face finally gets to smile.
+
+<img src="idea3.JPG" height="600" />
 
 
 
