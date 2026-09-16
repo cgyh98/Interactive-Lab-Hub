@@ -227,6 +227,10 @@ A face sits behind five "prison bars," one per weekday. The bars disappear one a
 
 **Put the names of the people you gave feedback to here. (Even better, add links to their repos here!)**
 
+- Aurora Jiaxin Shen: https://github.com/aurorajxshen/Interactive-Lab-Hub/tree/Fall2026/Lab%202
+- Rohil Saraf: https://github.com/rohilsaraf97/Interactive-Lab-Hub/blob/Fall2026/Lab%202/README.md
+- Serena: ...
+
 # Lab 2 Part 2
 
 ## Prep 
@@ -235,6 +239,9 @@ A face sits behind five "prison bars," one per weekday. The bars disappear one a
 
 2. Look at and give feedback on the Part E. for at least 3 other people in the class and get 3 people to comment on your Part E!)
 **Put the feedback for your ideas here.**
+- From Aurora: "I really like the idea of visualizing time in shape as rounded flower petals, and having the background as hints for the weather conditions, maybe the petal number can be multiples of 12 so that it matches the time in a more explicit way? And I love the weekend countdown idea! It gives emotional resonance with the faces, I’d use that to count down my work days."
+- From Rohil: ...
+- From Serena: ...
 
 ## Update your Lab Hub
 
