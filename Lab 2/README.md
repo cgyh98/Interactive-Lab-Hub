@@ -1,5 +1,5 @@
 # Interactive Prototyping: The Clock of Pi
-**NAMES OF COLLABORATORS HERE** Edmond Kong (eck67) Gabriela Yaulli Herrera (cgy4)
+**NAMES OF COLLABORATORS HERE** Edmond Kong (eck67) Gabriela Yaulli Herrera (cgy4), Jacey Hu (ch2296)
 
 Does it feel like time is moving strangely during this semester?
 
@@ -252,11 +252,17 @@ My only suggestion would be to think more about how users could interact with th
 
 Start small, pick just one element of your overall idea, just to show you have a handle on the code and components.
 
+We started off by making a smiley face in the Pi display, and we eventually added the prison bars on top in our final iteration.
+
 \*\*\***Put a copy of your code in your Lab 2 Github repo.**\*\*\*
+
+smiley.py draws just the weekend smiley face from jail.py, with no bars and no clock.
 
 ## Make a short video of your modified barebones PiClock
 
 \*\*\***Take a video of your barely modified PiClock.**\*\*\*
+
+[Modified PiClock video](https://github.com/cgyh98/Interactive-Lab-Hub/blob/Fall2026/Lab%202/modifiedclock.MOV)
 
 After you edit and work on the scripts for Lab 2, the files should be upload back to your own GitHub repo! You can push to your personal github repo by adding the files here, commiting and pushing.
 
@@ -277,11 +283,18 @@ Do take advantage of having done the previous iteration to refine and simplify y
 
 \*\*\***Put a copy of your code in your Lab 2 Github repo.**\*\*\*
 
+Please look at jail.py for the code. fast_jail.py was used to speed up the clock in order to show the clock moving in the video.
+
 \*\*\***Take a video of your PiClock.**\*\*\*
 
+Please look at final_video.mp4 for the PiClock video.
 
-As always, make sure you document contributions and ideas from others (and AI) explicitly in your writeup.
+[PiClock video](https://github.com/cgyh98/Interactive-Lab-Hub/blob/Fall2026/Lab%202/final_video.mp4)
 
-You are permitted (but not required) to work in groups and share a turn in; you are expected to make equal contribution on any group work you do, and N people's group project should look like N times the work of a single person's lab.  Make sure the page for the group turn in is linked to your personal Interactive Lab Hub page. 
+\*\*\***Contributions**\*\*\*
+
+All members contributed equally to the assignment. Filming of the videos and idea generation was done through group discussions.
+
+The file jail.py and fast_jail.py were written with AI assistance. Audio used for the PiClock videos is used for educational purposes only.
 
 
