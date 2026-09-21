@@ -228,8 +228,8 @@ A face sits behind five "prison bars," one per weekday. The bars disappear one a
 **Put the names of the people you gave feedback to here. (Even better, add links to their repos here!)**
 
 - Aurora Jiaxin Shen: https://github.com/aurorajxshen/Interactive-Lab-Hub/tree/Fall2026/Lab%202
-- Rohil Saraf: https://github.com/rohilsaraf97/Interactive-Lab-Hub/blob/Fall2026/Lab%202/README.md
-- Serena: ...
+- Max Cokran: https://github.com/mc3223/Peppers-Ghost
+- Serena Tsai: https://github.com/ht534-ui/Interactive-Lab-Hub/tree/Fall2026/Lab%202
 
 # Lab 2 Part 2
 
@@ -240,8 +240,9 @@ A face sits behind five "prison bars," one per weekday. The bars disappear one a
 2. Look at and give feedback on the Part E. for at least 3 other people in the class and get 3 people to comment on your Part E!)
 **Put the feedback for your ideas here.**
 - From Aurora: "I really like the idea of visualizing time in shape as rounded flower petals, and having the background as hints for the weather conditions, maybe the petal number can be multiples of 12 so that it matches the time in a more explicit way? And I love the weekend countdown idea! It gives emotional resonance with the faces, I’d use that to count down my work days."
-- From Rohil: ...
-- From Serena: ...
+- From Max: "I love the weekend countdown prison bars idea. It’s humorous in a rebellious sort of way, I think if you lean into the humor as much as possible there, then it’s certainly something I would use haha, even put on my desk at work if I were feeling brave"
+- From Serena: "I really like Idea 3 — Weekend Countdown! I think it uses a really interesting and humorous way to show how much of the week has passed, and it represents people’s mood of waiting for the weekend to come really well.
+My only suggestion would be to think more about how users could interact with the clock through the buttons. Adding some button interactions could make the experience even more fun and engaging!"
 
 ## Update your Lab Hub
 
