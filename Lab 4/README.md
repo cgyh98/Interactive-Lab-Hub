@@ -323,11 +323,20 @@ Build a cardboard or other low-fidelity physical prototype of your design.
 
 **\*\*\*Document your rough prototype with photos and/or video.\*\*\***
 
-**In progress:**
+**In progress:** building the prototype
 
-![Rough prototype 1](images/progress1.jpg)
-
-![Rough prototype 2](images/progress2.jpg)
+<p float="left">
+  <img src="images/IMG_8208.JPG" width="300"/>
+  <img src="images/IMG_8209.JPG" width="300"/>
+  <img src="images/IMG_8210.JPG" width="300"/>
+  <img src="images/IMG_8212.JPG" width="300"/>
+  <img src="images/IMG_8213.JPG" width="300"/>
+  <img src="images/IMG_8248.jpg" width="300"/>
+  <img src="images/IMG_8249.JPG" width="300"/>
+  <img src="images/IMG_8250.JPG" width="300"/>
+  <img src="images/IMG_8251.JPG" width="300"/>
+  <img src="images/IMG_8252.JPG" width="300"/>
+</p>
 
 [▶ Rough prototype video](VIDEO_LINK_HERE)
 
