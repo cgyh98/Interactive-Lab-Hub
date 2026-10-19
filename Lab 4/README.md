@@ -19,7 +19,7 @@
 ## Lab Overview
 Team: <canvas group name>  
 Members: Full Name (netid, github-handle), ...  
-Clock name: <name>
+Project name: Overfill Bowl
 
 
 For lab this week, we focus on both sensing and actuation, bringing new modes of input and output into your devices, while also prototyping the physical structure and overall look of the device. You will consider how the physical form supports sensing and actuation, and how these elements come together to shape the interaction and aesthetics of the device.
@@ -171,8 +171,7 @@ You can go the the [Adafruit GitHub Page](https://github.com/adafruit/Adafruit_C
 
 #### Rotary Encoder 
 
-A rotary encoder is an electro-mechanical device that converts the angular position to analog or digital output signals. The [Adafruit rotary encoder](https://www.adafruit.com/product/4991#technical-details) we ordered for you came with separate breakout board and encoder itself, that is, they will need to be soldered if you have not yet done so! We will be bringing the soldering station to the lab class for you to use, also, you can go to the MakerLAB to do the soldering off-class. Here is some [guidance on soldering](https://learn.adafruit.com/adafruit-guide-excellent-soldering/preparation) from Adafruit. When you first solder, get someone who has done it before (ideally in the MakerLAB environment). It is a good idea to review this material beforehand so you know what to look at.
-
+A rotary encoder is an electro-mechanical device that converts the angular position to analog or digital output signals. The [Adafruit rotary encoder](https://www.adafruit.com/product/4991#technical-details) we ordered for you came pre-soldered, so you do NOT need to solder anything.
 <p float="left">
 
    
@@ -251,6 +250,8 @@ python pi_servo_hat_test.py
 For more details and advanced usage, see the [official SparkFun Servo pHAT documentation](https://learn.sparkfun.com/tutorials/pi-servo-phat-v2-hookup-guide/all#resources-and-going-further).
 A servo motor is a rotary actuator that allows for precise control of angular position. The position is set by the width of an electrical pulse (PWM). You can read [this Adafruit guide](https://learn.adafruit.com/adafruit-arduino-lesson-14-servo-motors/servo-motors) to learn more about how servos work.
 
+**Our servo setup:** We stacked the Servo pHAT on our Raspberry Pi 5 and plugged a 9g micro servo into channel 0 (brown wire to GND). `i2cdetect -y 1` showed the pHAT at `0x40` (plus its all-call address `0x70`). We installed `sparkfun-pi-servo-hat` in the Lab 4 `.venv` and ran `pi_servo_hat_test.py`, which swept the servo between 0° and 120°. The servo moved even with only the Pi powered, but it was drawing from the Pi's 5V rail, so we added a second USB-C cable to the pHAT to power the servo separately.
+
 ---
 
 ### Part D
@@ -286,13 +287,49 @@ As you develop your Feast Automata concept, consider where the sensor and actuat
 
 **\*\*\*Draw 5 sketches that explore different physical arrangements for your sensing and actuation.\*\*\***
 
+**Sketch 1:** _caption_
+
+![Sketch 1](images/sketch1.jpg)
+
+**Sketch 2:** _caption_
+
+![Sketch 2](images/sketch2.jpg)
+
+**Sketch 3:** _caption_
+
+![Sketch 3](images/sketch3.jpg)
+
+**Sketch 4:** _caption_
+
+![Sketch 4](images/sketch4.jpg)
+
+**Sketch 5:** _caption_
+
+![Sketch 5](images/sketch5.jpg)
+
 **\*\*\*What questions do these sketches raise? What do you need to physically prototype to answer them?\*\*\***
 
+- How high above the bowl does the distance sensor need to be to tell a normal bowl from an overfilled one?
+- Will the sensor see the pile reliably if the food lands off-center, or is a different color or texture?
+- Can a 9g micro servo move with enough speed and force to actually throw food?
+- Where does the servo need to sit so its paddle sweeps across the top of the pile without passing under the sensor?
+- Which direction should the food be thrown, and where does it land?
+
 **\*\*\*Pick one design to prototype and explain why.\*\*\***
+
+**Overfill Bowl:** a distance sensor above the bowl watches how high the food is piled. When someone serves too much, a servo paddle flicks the excess out of the bowl. We picked it because it turns a familiar dining moment (taking a bit too much) into a playful, exaggerated reaction, and it uses one sensor and one servo in a direct cause-and-effect interaction that's easy to understand at a glance.
 
 Build a cardboard or other low-fidelity physical prototype of your design.
 
 **\*\*\*Document your rough prototype with photos and/or video.\*\*\***
+
+**In progress:**
+
+![Rough prototype 1](images/progress1.jpg)
+
+![Rough prototype 2](images/progress2.jpg)
+
+[▶ Rough prototype video](VIDEO_LINK_HERE)
 
 ---
 
@@ -331,6 +368,73 @@ Iterate on the sensing, movement, and physical form, and document what you disco
 See encoder_accel_servo_dashboard.py in the Lab 4 folder for an optional example of chaining together three devices.
 
 **`Lab 4/encoder_accel_servo_dashboard.py`**
+
+#### Our Build: Overfill Bowl
+
+**Interaction pipeline:** food piled too high → distance sensor reading rises past the threshold for 1 s → servo flicks the excess food out of the bowl → food level drops → device re-arms.
+
+```mermaid
+flowchart LR
+    A[Food piled above<br>normal level] --> B[VCNL4040 distance sensor<br>above bowl, facing down]
+    B -->|proximity reading| C{Reading ≥ OVERFILL_THRESHOLD<br>for 1 second?}
+    C -->|no| B
+    C -->|yes| D[Servo flick x2<br>130° → -45° at full speed]
+    D --> E[Excess food thrown out]
+    E --> F{Reading < RESET_THRESHOLD<br>for 1 second?}
+    F -->|yes: re-armed| B
+```
+
+**Hardware**
+
+| Part | Connection |
+|---|---|
+| Raspberry Pi 5 | Powered by its own USB-C supply |
+| SparkFun Servo pHAT (PCA9685, I²C `0x40`) | Stacked on the Pi's GPIO header, powered by a **second** USB-C cable so the servo doesn't draw from the Pi's 5V rail |
+| Micro servo (9g) | Servo pHAT channel 0 (brown = GND, red = V+, orange = PWM) |
+| SparkFun Qwiic Proximity Sensor (VCNL4040, I²C `0x60`) | Qwiic cable to the Servo pHAT's Qwiic port; mounted above the bowl, facing down |
+
+**Code:** [`overfill_bowl.py`](overfill_bowl.py)
+
+```bash
+cd ~/Documents/GitHub/Interactive-Lab-Hub/"Lab 4"
+source .venv/bin/activate
+python overfill_bowl.py               # run the overfill bowl
+python overfill_bowl.py --calibrate   # print sensor readings only
+python overfill_bowl.py --throw       # do the throw once, without the sensor
+```
+
+How the code works:
+- **Sensing:** the VCNL4040 shines infrared light down and measures how much reflects back. Food closer to the sensor (a taller pile) gives a higher reading.
+- **Hysteresis:** the bowl counts as overfilled at `OVERFILL_THRESHOLD` and only re-arms below the lower `RESET_THRESHOLD`, so a reading hovering around one value doesn't make the servo fire over and over.
+- **Hold time:** a reading has to stay past a threshold for `HOLD_TIME = 1.0` s before it counts, so a hand or spoon passing under the sensor doesn't trigger it.
+- **One reaction per overfill:** the servo reacts once each time the bowl becomes overfilled, not continuously.
+- **The throw:** the servo slowly winds up to `WINDUP_ANGLE`, then jumps straight to `FLICK_ANGLE` in a single command (instead of small steps) so it moves at the servo's full speed. This repeats `FLICK_REPEATS = 2` times, then the servo returns home (60°).
+
+**Calibration data** (from `--calibrate`, sensor and bowl fixed in place)
+
+| Sensor position | Normal bowl | Overfilled bowl | Gap | Thresholds used |
+|---|---|---|---|---|
+| Position 1 (closer to food) | ~240 | ~377 | ~137 | overfill 320 / reset 280 |
+| Position 2 (higher) | ~88 | ~100 | ~12 | overfill 96 / reset 92 |
+
+Readings are only valid for the exact sensor and bowl positions they were taken at. Recalibrate whenever either one moves.
+
+#### Iterations
+
+1. **Servo bring-up.** Ran `pi_servo_hat_test.py`. The Pi initially saw nothing on the I²C bus; reseating the Servo pHAT made it appear at `0x40`. The servo also moved with only the Pi powered, but we added the pHAT's own USB-C power as the lab recommends, so servo current spikes can't brown out the Pi 5. `vcgencmd get_throttled` stayed at `0x0` (no under-voltage) through all tests.
+2. **Placeholder motion.** The first version swept the servo back and forth in 3° steps. It was too slow and gentle to move any food.
+3. **Calibration problems.** The first overfilled reading (~80) was *lower* than the normal one (~130), because the sensor and bowl had shifted between measurements. Fixing both in place gave consistent readings (normal ~240, overfilled ~377).
+4. **Fast flick.** Replaced the sweep with a wind-up followed by a single jump to the end position, so the servo moves at full speed. The first flick went the wrong way (0° → 120°), so we reversed it.
+5. **More range.** The throw was still too weak. The `pi_servo_hat` library maps 0–90° to 1–2 ms pulses, but 9g servos accept about 0.5–2.5 ms, so the "0°" end wasn't the servo's real limit. We widened the throw to 130° → -30°, then to 130° → -45° (≈0.5 ms, the servo's limit). At full range the throw cleared the extra food: the sensor reading dropped from ~99 back to ~88 right after the flick.
+6. **Sensor moved higher (position 2).** At this height the normal/overfilled gap shrank to ~12. A slightly overfilled bowl (~81) read the same as a bowl after a throw (~82), so the sensor could no longer detect a slight overfill. We added a `--throw` mode to trigger the motion manually for demos, and the next step is moving the sensor back closer to the food (about 5–10 cm above the pile) and recalibrating.
+
+#### Reflection
+
+- **Sensing depends on physical placement.** The same sensor gave a ~137-point difference between normal and overfilled at one height and only ~12 at another. Where the sensor sits and what it's aimed at mattered more than any code change.
+- **The sensor measures reflection, not distance.** Because it measures reflected infrared light, a bumped sensor, a shifted bowl, or food landing in a different spot changed readings as much as the pile height did. Fixing everything in place and recalibrating was essential.
+- **Speed comes from how you command the servo.** Moving in small steps looked smooth but had no force behind it. A single jump to the end position, plus using the servo's full pulse range, turned a wiggle into a throw.
+- **Software has limits.** Once the servo was at its full speed and range, the only way to throw harder was mechanical: a longer, lighter paddle that scoops under the edge of the pile.
+- **Timing makes it playful.** The 1-second hold before reacting makes the bowl feel like it's "noticing" the overfill rather than twitching at every spoon.
 
 #### Example Application: Windmill Coaster
 
@@ -490,6 +594,22 @@ Document all the prototypes and iterations you have designed and worked on! Agai
 * "Looks like": shows how the device should look, feel, sit, weigh, etc.
 * "Works like": shows what the device can do
 * "Acts like": shows how a person would interact with the device
+
+#### Overfill Bowl: Final Documentation
+
+**Looks like:** A bowl sits on a marked spot on the table. A Qwiic distance sensor is held above the bowl on a cardboard arm, looking straight down at the food. A micro servo with a paddle is mounted at the rim of the bowl, at the height where extra food piles up, ready to sweep across the top of the pile and fling the excess off to the right.
+
+![Looks like: full prototype](images/looks_like1.jpg)
+
+![Looks like: sensor arm and servo paddle](images/looks_like2.jpg)
+
+**Works like:** The distance sensor measures how high the food is piled. When the reading stays above the overfill threshold for 1 second, the servo winds up and snaps across the bowl twice at full speed, throwing the excess food out. Once the food level drops back down, the device re-arms and waits for the next overfill. A `--throw` mode triggers the same motion manually for testing and demos.
+
+[▶ Works like video: sensor detects the overfilled bowl and the servo throws the food](VIDEO_LINK_HERE)
+
+**Acts like:** Someone serves themselves a little too much. After a second, the bowl "decides" that's too much and flicks the extra food away, a playful and slightly rude reminder about portion size. The person can eat normally or scoop food back in, and the bowl only reacts again if they overfill it again.
+
+[▶ Acts like video: a person serves too much and the bowl reacts](VIDEO_LINK_HERE)
 
 ---
 
