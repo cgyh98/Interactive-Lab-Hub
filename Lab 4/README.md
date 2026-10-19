@@ -287,25 +287,13 @@ As you develop your Feast Automata concept, consider where the sensor and actuat
 
 **\*\*\*Draw 5 sketches that explore different physical arrangements for your sensing and actuation.\*\*\***
 
-**Sketch 1:** _caption_
+![Sketch 1](images/sketches.jpg)
 
-![Sketch 1](images/sketch1.jpg)
-
-**Sketch 2:** _caption_
-
-![Sketch 2](images/sketch2.jpg)
-
-**Sketch 3:** _caption_
-
-![Sketch 3](images/sketch3.jpg)
-
-**Sketch 4:** _caption_
-
-![Sketch 4](images/sketch4.jpg)
-
-**Sketch 5:** _caption_
-
-![Sketch 5](images/sketch5.jpg)
+1. Top-Down Sensing: An arm holds the distance sensor (VCNL4040) directly above the bowl, facing down, so the reading rises as the food piles higher. A servo at the base of a post on the other side swings a scraper down across the top of the bowl to knock the excess food off.
+2. Side-Level Sensing: The sensor stands beside the bowl at rim height, facing across the top of the food. If the food rises above the rim, the bowl counts as overfilled. A servo at the base of a post on the opposite side swings a paddle up and over the bowl to flick the extra food out.
+3. Lid Rotate: The sensor stands beside the bowl, and a round lid is mounted on a post next to it. When the bowl is overfilled, the servo rotates the lid horizontally across the top of the bowl, shaving off anything piled above the rim.
+4. Tilting Platform: The bowl sits on a flat platform attached to a servo post at one corner. When the sensor detects an overfill, the servo tilts the platform so the excess food slides off. This sketch helps compare whether moving the bowl feels different from moving a paddle.
+5. Split Different Color: A variation that sorts food instead of removing it. Colored candies roll down a chute past a color sensor (APDS-9960). Based on the color it reads, the servo at the base turns the chute to drop each candy into one of two bowls, for example green ones into one bowl and everything else into the other.
 
 **\*\*\*What questions do these sketches raise? What do you need to physically prototype to answer them?\*\*\***
 
@@ -336,7 +324,7 @@ Build a cardboard or other low-fidelity physical prototype of your design.
   <img src="images/IMG_8250.JPG" width="300"/>
 </p>
 
-[▶ Rough prototype video](VIDEO_LINK_HERE)
+[▶ Rough prototype video](https://drive.google.com/file/d/1P4_KAVnLWqcwqmgkswj59-2zA6K91EmE/view?usp=sharing)
 
 ---
 
