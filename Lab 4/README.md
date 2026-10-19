@@ -614,11 +614,11 @@ Document all the prototypes and iterations you have designed and worked on! Agai
 
 **Works like:** The distance sensor measures how high the food is piled. When the reading stays above the overfill threshold for 1 second, the servo winds up and snaps across the bowl twice at full speed, throwing the excess food out. Once the food level drops back down, the device re-arms and waits for the next overfill. A `--throw` mode triggers the same motion manually for testing and demos.
 
-[▶ Works like video: sensor detects the overfilled bowl and the servo throws the food](VIDEO_LINK_HERE)
+[▶ Works like video: sensor detects the overfilled bowl and the servo throws the food](https://drive.google.com/file/d/12zmTxbjzCw5-qcYsZbCu-Qobcw9N-IEI/view?usp=drive_link)
 
 **Acts like:** Someone serves themselves a little too much. After a second, the bowl "decides" that's too much and flicks the extra food away, a playful and slightly rude reminder about portion size. The person can eat normally or scoop food back in, and the bowl only reacts again if they overfill it again.
 
-[▶ Acts like video: a person serves too much and the bowl reacts](VIDEO_LINK_HERE)
+[▶ Acts like video: a person serves too much and the bowl reacts](https://drive.google.com/file/d/1zcI5CtQhQWu3Q7nQF4hhUuJ2JaYRUmdB/view?usp=sharing)
 
 ---
 
