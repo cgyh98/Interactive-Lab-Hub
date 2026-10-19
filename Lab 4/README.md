@@ -609,7 +609,7 @@ Document all the prototypes and iterations you have designed and worked on! Agai
 **Looks like:** A bowl sits on a marked spot on the table. A Qwiic distance sensor is held above the bowl on a cardboard arm, looking straight down at the food. A micro servo with a paddle is mounted at the rim of the bowl, at the height where extra food piles up, ready to sweep across the top of the pile and fling the excess off to the right.
 
 ![Looks like: full prototype]. 
-(Lab 4/images/looks_like1.JPG)
+<img src="Lab 4/images/looks_like1.JPG">
 
 ![Looks like: sensor arm and servo paddle](images/looks_like2.JPG)
 
