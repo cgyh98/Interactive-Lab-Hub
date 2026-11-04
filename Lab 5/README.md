@@ -2,7 +2,7 @@
 
 **Team:** 
 
-**Members:** Jacey Hu (ch2296, kakiko1111), , 
+**Members:** Jacey Hu (ch2296, kakiko1111), Gabriela Yaulli (cgy4, cgyh98) , Edmond Kong (eck67, edmkong)
 
 **Project name:** Door Watch
 
