@@ -28,6 +28,9 @@ MQTT topics (broker farlab.infosci.cornell.edu, all under IDD/mamaya/gossip/)
   hello/<pi>    {"known": [rumor ids], "hush": bool}   every 2 s from every Pi
   rumor/<to>    {"from", "rid", "text", "origin"}     a rumor whispered to one Pi
   hush/<pi>     "1" / "0"                              eavesdropper seen / gone
+  say/<pi>      "shh! someone's listening."            everything a Pi says, so all screens show
+                                                       the whole conversation (rumor text is
+                                                       hidden until the rumor reaches you)
   bye/<pi>      ""                                     sent by the broker if a Pi drops off
 
 Run:   python3 gossip.py --calibrate               # print VCNL4040 readings to pick a threshold
@@ -60,7 +63,7 @@ MQTT_BROKER = "farlab.infosci.cornell.edu"
 MQTT_PORT = 1883
 MQTT_USERNAME = "idd"
 MQTT_PASSWORD = "device@theFarm"
-BASE = "IDD/mamaya/gossip"
+BASE = os.environ.get("GOSSIP_TOPIC", "IDD/mamaya/gossip")  # change it to test without joining the real group
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:1.5b")  # use whichever Qwen you pulled
@@ -152,14 +155,14 @@ class GossipNode:
         """Start a new rumor: typed text, else one from the list, else one made up by Ollama."""
         if text:
             self.add_rumor(text, origin=self.id)
-            self.say(f"ooh, I just heard {text}")
+            self.say(f"ooh, I just heard {text}", public="*heard something juicy...*")
             return
         known = {r["text"] for r in self.rumors.values()}
         fresh = [t for t in STARTER_RUMORS if t not in known]
         if fresh:
             text = random.choice(fresh)
             self.add_rumor(text, origin=self.id)
-            self.say(f"ooh, I just heard {text}")
+            self.say(f"ooh, I just heard {text}", public="*heard something juicy...*")
         elif not self.use_ollama:
             self.say("I've run out of gossip! type one in for me.")
         elif not self.generating:  # ignore extra taps while the model is thinking
@@ -180,23 +183,35 @@ class GossipNode:
         finally:
             self.generating = False
         if text and self.add_rumor(text, origin=self.id):
-            self.say(f"ooh, I just heard {text}")
+            self.say(f"ooh, I just heard {text}", public="*heard something juicy...*")
         else:
             self.say("hmm, never mind. I forgot what I heard.")
 
-    def say(self, line):
-        print(f"[{time.strftime('%H:%M:%S')}] {self.id}: {line}", flush=True)
+    def say(self, line, public=None):
+        """Show (and speak) one of this Pi's lines, and share it on say/<me> so the others show it too.
+
+        public: what the other Pis see instead (so rumor text stays a whisper until it
+        actually reaches them), or False to keep the line to this Pi only.
+        """
+        self.show(self.id, line)
+        if self.speak_enabled:
+            subprocess.Popen(["espeak-ng", "-v", self.voice, line],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if public is not False and getattr(self, "client", None):
+            self.publish(f"say/{self.id}", line if public is None else public)
+
+    def show(self, speaker, line):
+        """Print a line and put it on the screen. Other Pis' lines are prefixed with their name."""
+        print(f"[{time.strftime('%H:%M:%S')}] {speaker}: {line}", flush=True)
         if self.screen:
             friends = len(self.together)
             header = f"{self.id} · {friends} friend{'' if friends == 1 else 's'}"
             mood = "hush" if self.is_quiet() else ("chat" if friends else "alone")
+            text = line if speaker == self.id else f"{speaker}: {line}"
             try:
-                self.screen.show(header, line, mood)
+                self.screen.show(header, text, mood)
             except Exception as e:  # noqa: BLE001
                 print(f"(screen error: {e})")
-        if self.speak_enabled:
-            subprocess.Popen(["espeak-ng", "-v", self.voice, line],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def is_quiet(self):
         """True when anyone in the group has spotted an eavesdropper."""
@@ -331,10 +346,13 @@ class GossipNode:
                 self.together.add(peer)
             if self.add_rumor(rumor, origin, rid):
                 source = "" if origin == peer else f" (they heard it from {origin})"
-                self.say(f"psst, {peer} just told me {rumor}{source}")
+                self.say(f"psst, {peer} just told me {rumor}{source}", public=False)  # too chatty to share
 
         elif kind == "hush" and who != self.id:
             self.peer_hush[who] = text == "1"
+
+        elif kind == "say" and who != self.id:
+            self.show(who, text)  # a friend said something: show it here too (not spoken)
 
         elif kind == "bye" and who != self.id:
             self.hello_seen.pop(who, None)  # presence_loop will say goodbye

@@ -198,6 +198,7 @@ All three Pis run the same code and follow the same steps. Only the name and voi
 | `hello/<pi>` | `{"known": [rumor ids], "hush": bool}` | Every 2 seconds, listing the rumors this Pi knows |
 | `rumor/<to-pi>` | `{"from", "rid", "text", "origin"}` | When a hello shows another Pi is missing a rumor |
 | `hush/<pi>` | `1` / `0` | When a Pi's VCNL4040 sees someone stay close, and again when they leave |
+| `say/<pi>` | the line, e.g. `shh! someone's listening.` | Everything a Pi says, so every screen shows the whole conversation. New rumors show as `*heard something juicy...*` until they actually reach you |
 | `bye/<pi>` | empty | Sent by the broker (MQTT "last will") if a Pi drops off |
 
 #### What each Pi must do
