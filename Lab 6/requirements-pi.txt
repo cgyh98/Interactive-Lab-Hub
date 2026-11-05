@@ -8,6 +8,7 @@ adafruit-circuitpython-busdevice>=5.2.6
 adafruit-circuitpython-mpr121>=2.1.19
 adafruit-circuitpython-register>=1.9.17
 adafruit-circuitpython-rgb-display>=3.12.0
+adafruit-circuitpython-vcnl4040
 Adafruit-PlatformDetect>=3.84.1
 Adafruit-PureIO>=1.1.11
 RPi.GPIO>=0.7.1
