@@ -5,63 +5,17 @@
 - Jacey Hu (ch2296, kakiko1111)
 - Gabriela Yaulli (cgy4, cgyh98)
 
----
-
-## Prep
-
-1. Pull the new changes
-2. Read: [The Presence Table](https://dl.acm.org/doi/10.1145/1935701.1935800) ([video](https://vimeo.com/15932020))
-
-## Overview
-
-Build interactive systems where **multiple devices communicate over a network** using MQTT messaging. Work in teams of 3+ with Raspberry Pis.
-
-**Parts:**
-- A: Learn MQTT messaging
-- B: Try collaborative pixel grid demo  
-- C: Build your own distributed system
+**Demo video:** [Watch Gossiping Pis on Google Drive](https://drive.google.com/file/d/1-fGIk0lGZlaCoq7OVxLD7pXoxYfurYXl/view?usp=sharing)
 
 ---
 
 ## Part A: MQTT Messaging
 
-MQTT = lightweight messaging for IoT. Publish/subscribe model with central broker.
+We tested publishing and subscribing on the class broker (`farlab.infosci.cornell.edu:1883`) and used `IDD/mamaya` as our team's topic space, for example:
 
-**Concepts:**
-- **Broker**: `farlab.infosci.cornell.edu:1883`
-- **Topic**: Like `IDD/bedroom/temperature` (use `#` wildcard)
-- **Publish/Subscribe**: Send and receive messages
-
-**Install MQTT tools on your Pi:**
 ```bash
-sudo apt-get update
-sudo apt-get install -y mosquitto-clients
+mosquitto_pub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/mamaya/edm' -m 'Hello!' -u idd -P 'device@theFarm'
 ```
-
-**Test it:**
-
-**Subscribe to messages (listener):**
-```bash
-mosquitto_sub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/#' -u idd -P 'device@theFarm'
-```
-
-**Publish a message (sender):**
-```bash
-mosquitto_pub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/test/yourname' -m 'Hello!' -u idd -P 'device@theFarm'
-```
-
-> **💡 Tips:**
-> - Replace `yourname` with your actual name in the topic
-> - Use single quotes around the password: `'device@theFarm'`
-> - For your own projects, publish under your team's topic space: `IDD/<yourteam>/...` (for example `IDD/team3/bedroom/light`). Everyone shares one broker login, so anything you publish can reach everyone's projects.
-
-**🔧 Debug Tool:** View all MQTT messages in real-time at `http://farlab.infosci.cornell.edu:5001`
-
-![MQTT Explorer showing messages](imgs/MQTT-explorer.png)
-
-We will use IDD/mamaya for our team name. 
-i.e. mosquitto_pub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/mamaya/edm' -m 'Hello!' -u idd -P 'device@theFarm'
-
 
 **💡 Brainstorm 5 ideas for messaging between devices**
 
@@ -75,66 +29,7 @@ i.e. mosquitto_pub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/mamaya/edm' -m 
 
 ## Part B: Collaborative Pixel Grid
 
-Each Pi = one pixel, controlled by RGB sensor, displayed in real-time grid.
-
-**Architecture:** `Pi (sensor) → MQTT → Server → Web Browser`
-
-**Setup:**
-
-1. **Sensor**
-
-#### Light/Proximity/Gesture sensor (APDS-9960)
-We use this sensor [Adafruit APDS-9960](https://www.adafruit.com/product/3595) for this exmaple to detect light (also RGB)
- 
-<img src="https://cdn-shop.adafruit.com/970x728/3595-06.jpg" width=200>
-
-Connect it to your pi with Qwiic connector
-
-
-<img src="imgs/IMG_0270.jpg" height="200" />
-We need to use the screen to display the color detection, so we need to stop the running piscreen.service to make your screen available again
-
-```bash
-# stop the screen service
-sudo systemctl stop piscreen.service
-```
-
-if you want to restart the screen service
-```bash
-# start the screen service
-sudo systemctl start piscreen.service
-```
- 
-2. **Server** (one person on laptop):
-```bash
-cd "Lab 6"
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-server.txt
-python app.py
-```
-
-2. **View in browser:**
-   - Grid: `http://farlab.infosci.cornell.edu:5000`
-   - Controller: `http://farlab.infosci.cornell.edu:5000/controller`
-
-3. **Pi publisher** (everyone on their Pi):
-```bash
-# First time setup - create virtual environment
-cd "Lab 6"
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-pi.txt
-
-# Run the publisher
-python pixel_grid_publisher.py
-```
-
-Hold colored objects near sensor to change your pixel!
-
-![Pixel grid with two devices](imgs/two-devices-grid.png)
-
-**📸 Include: Screenshot of grid + photo of your Pi setup**
+Each Pi reads color from an APDS-9960 sensor and publishes it over MQTT, and a server shows every Pi as one pixel in a shared grid in the browser (`Pi (sensor) → MQTT → Server → Web Browser`).
 
 ![Our Pi setup with the live pixel grid on both laptops](imgs/partb.png)
 
@@ -142,42 +37,14 @@ Two Pis with APDS-9960 sensors publish their colors to the shared grid. The same
 
 ---
 
-## Part C: Make Your Own
-
-**Requirements:**
-- 3+ people, 3+ Pis
-- Each Pi contributes sensor input via MQTT
-- Meaningful or fun interaction
-
-**Ideas:**
-
-**Sensor Fortune Teller**
-- Each Pi sends 0-255 from different sensor
-- Server generates fortunes from combined values
-
-**Frankenstories**
-- Sensor events → story elements (not text!)
-- Red = danger, gesture up = climbed, distance <10cm = suddenly
-
-**Distributed Instrument**
-- Each Pi = one musical parameter
-- Only works together
-
-**The Listening Room**
-- One Pi runs Ollama and subscribes to the others' sensor topics
-- Every minute it describes the room's "mood" in a sentence and publishes it
-- Other Pis turn that sentence into light or sound
-
-**Others:** Games, presence display, mood ring
-
-### Our Project: Gossiping Pis
+## Part C: Gossiping Pis
 
 Three Pis gossip with each other over MQTT. Every Pi has a VCNL4040 proximity sensor, and how long something stays close decides what happens:
 
 - **Quick tap** (hand in and out in under 1.5 s): the Pi starts a new rumor, which spreads from Pi to Pi.
 - **Something stays close** (1.5 s or more): an eavesdropper! That Pi hisses "shh, someone's listening", and the whole group makes small talk until the person backs off.
 
-Each Pi shows what it's saying on its screen, and says it out loud too if it has a speaker.
+Each Pi shows what it's saying on its screen, and says it out loud too if it has a speaker. After user testing, we also added a USB microphone so that people talking near a Pi can start a rumor (see Iteration below).
 
 **Where rumors come from:** each tap first uses a rumor from a list we wrote (`STARTER_RUMORS` in `gossip.py`). Once a Pi has heard all of those, the next tap asks the Qwen model running on that Pi (through Ollama) to make up a new one. The screen shows "ooh wait, I'm hearing something..." while it thinks. Taps during that time are ignored. If Ollama isn't running, the Pi says it's run out of gossip. You can also type a rumor and press Enter at any time.
 
@@ -201,7 +68,7 @@ All three Pis run the same code and follow the same steps. Only the name and voi
 | `say/<pi>` | the line, e.g. `shh! someone's listening.` | Everything a Pi says, so every screen shows the whole conversation. New rumors show as `*heard something juicy...*` until they actually reach you |
 | `bye/<pi>` | empty | Sent by the broker (MQTT "last will") if a Pi drops off |
 
-#### What each Pi must do
+### How to run it
 
 **1. Hardware**
 - With the Pi powered off, plug the VCNL4040 into the Pi with a Qwiic cable.
@@ -253,110 +120,188 @@ python gossip.py --name pi-edmond --listen-threshold <your number> --speak --voi
 - **Lean in or hold your hand over** any Pi's sensor for a couple of seconds to play the eavesdropper. All three Pis go quiet until you move away.
 - **Stop** one Pi with `Ctrl+C` or unplug it. The others say bye, and when it comes back, they catch it up on every rumor it missed.
 
-#### Notes
+**Notes**
 - No hotspot is needed. Campus Wi‑Fi works because every Pi only connects to the broker.
 - To test without a sensor (e.g. on a laptop), run `python gossip.py --no-sensor --name test`.
 - `--no-ollama` makes a Pi use only the built-in rumor list.
 - Optional: `--ble` makes Pis gossip only when they're physically close, based on Bluetooth signal strength.
 - To watch the messages live, open `http://farlab.infosci.cornell.edu:5001` and filter by `IDD/mamaya/gossip`.
+- Optional: `--mic` lets people talking near a Pi start a rumor through a USB microphone (see the Iteration section).
 
-### Deliverables
+### Architecture Diagram
 
-Replace this README with your documentation:
+**Storyboard (first version)**
 
-**1. Project Description**
-- What does it do? Why interesting? User experience?
+<img src="imgs/storyboard_v1.jpg" width="700">
 
-**2. Architecture Diagram**
-- Hardware, connections, data flow
-- Label input/computation/output
+Johnny brings his Pi to a gathering with friends. He taps the sensor to start a rumor ("Did you hear..."). The message goes to a central channel (the MQTT broker), which passes it on to everyone else's Pi, so the whole group reads it. When an eavesdropper shows up, Johnny covers the sensor with his hand. Every Pi gets the alert, and the group stays quiet ("la la la...") until the stranger leaves.
 
-**3. Build Documentation**
-- Photos of each Pi + sensors
-- MQTT topics used
-- Code snippets with explanations
+**System architecture**
 
-**4. User Testing**
-- **Test with 2+ people NOT on your team**
-- Photos/video of use
-- What did they think before trying?
-- What surprised them?
-- What would they change?
-
-**5. Reflection**
-- What worked well?
-- Challenges with distributed interaction?
-- How did sensor events work?
-- What would you improve?
-- Where did computation happen in your system, and why there? (If you used a language model: did it run on every event, or only at setup?)
-
-
-**Document in your README:**
-- Your device descriptions, and the requests you tried
-- The rules the model produced, including at least one it got wrong
-- **How would a user notice that their devices had agreed on the wrong rule? How would they fix it?**
-
----
-
-## Code Files
-
-**Server files:**
-- `app.py` - Pixel grid server (Flask + WebSocket + MQTT)
-- `mqtt_viewer.py` - MQTT message viewer for debugging
-- `mqtt_bridge.py` - MQTT → WebSocket bridge
-- `requirements-server.txt` - Server dependencies
-
-**Pi files:**
-- `pixel_grid_publisher.py` - Example (RGB sensor → MQTT)
-- `requirements-pi.txt` - Pi dependencies
-
-**Web interface:**
-- `templates/grid.html` - Pixel grid display
-- `templates/controller.html` - Color picker
-- `templates/mqtt_viewer.html` - Message viewer
-
----
-
-## Debugging Tools
-
-**MQTT Message Viewer:** `http://farlab.infosci.cornell.edu:5001`
-- See all MQTT messages in real-time
-- View topics and payloads
-- Helpful for debugging your own projects
-
-**Command line:**
-```bash
-# See all IDD messages
-mosquitto_sub -h farlab.infosci.cornell.edu -p 1883 -t "IDD/#" -u idd -P "device@theFarm"
+```mermaid
+flowchart LR
+    subgraph Pi["Each Pi (x3: pi-edmond, pi-jacey, pi-gabi)"]
+        S["INPUT<br/>VCNL4040 proximity sensor<br/>(quick tap vs. linger)"]
+        M["INPUT (optional, --mic)<br/>USB microphone<br/>(talking nearby)"]
+        G["COMPUTATION<br/>gossip.py<br/>tap/linger detection, rumor sync"]
+        O["COMPUTATION<br/>Ollama + Qwen (local)<br/>new rumors after the list runs out"]
+        D["OUTPUT<br/>MiniPiTFT screen + espeak-ng speaker"]
+        S --> G
+        M --> G
+        G <--> O
+        G --> D
+    end
+    G <-->|"hello / rumor / hush / say / bye"| B[("MQTT broker<br/>farlab.infosci.cornell.edu<br/>IDD/mamaya/gossip/#")]
 ```
 
----
+- **Input:** each Pi's VCNL4040 reads proximity. A quick tap (under 1.5 s) starts a rumor, and something staying close (1.5 s or more) counts as an eavesdropper. With `--mic`, talking near the Pi also starts a rumor.
+- **Computation:** `gossip.py` runs on every Pi. It decides tap vs. linger, keeps track of which rumors each Pi knows, and sends missing rumors to the others. When the starter list runs out, the Pi asks its own local Qwen model for a new rumor.
+- **Output:** each Pi shows the conversation on its screen and speaks it out loud if it has a speaker.
+- **Network:** the Pis never talk to each other directly. Everything goes through the shared MQTT broker, so any Pi on campus Wi-Fi can join.
 
-## Troubleshooting
+### Build Documentation
 
-**MQTT:** Broker `farlab.infosci.cornell.edu:1883`, user `idd`, pass `device@theFarm`
+**The three Pis**
 
-**Sensor:** Check `i2cdetect -y 1`, APDS-9960 at `0x39`
+| pi-edmond | pi-jacey | pi-gabi |
+|---|---|---|
+| <img src="imgs/pi_edmond.jpg" width="250"> | <img src="imgs/pi_jacey.jpg" width="250"> | <img src="imgs/pi_gabi.jpg" width="250"> |
 
-**Grid:** Verify server running, check MQTT in console, test with web controller
+Each Pi has a VCNL4040 proximity sensor on the Qwiic port, the MiniPiTFT screen, and a speaker. The MQTT topics are listed in the table above.
 
-**Pi venv:** Make sure to activate: `source .venv/bin/activate`
+**Tap vs. linger.** One sensor gives two inputs, depending on how long something stays close. A short visit starts a rumor, and a long one means someone is eavesdropping:
 
+```python
+if prox >= threshold:
+    if close_since is None:
+        close_since = now
+    last_close = now
+    if not self.someone_listening and now - close_since >= HUSH_AFTER:   # 1.5 s or more
+        self.someone_listening = True
+        self.say(random.choice(EAVESDROP_LINES))
+        self.publish_hush()   # warn the other Pis right away
+elif close_since is not None and now - last_close > LEFT_AFTER:
+    held = last_close - close_since
+    if not self.someone_listening and MIN_TAP <= held < HUSH_AFTER:   # quick tap
+        self.start_rumor()
+    close_since = None
+```
 
----
+**How rumors spread.** Every Pi publishes a `hello` every 2 seconds listing the rumor IDs it knows. When a Pi sees that a friend is missing one, it whispers a single rumor to that friend's own topic. Sending one rumor per hello makes the gossip trickle out like a real conversation, and a Pi that joins late gets caught up the same way.
 
-## Submission Checklist
+```python
+if kind == "hello" and who != self.id:
+    ...
+    if self.is_near(who) and not self.is_quiet():
+        missing = [rid for rid in self.rumors if rid not in set(msg.get("known", []))]
+        if missing:
+            rid = random.choice(missing)   # one rumor per hello
+            self.publish(f"rumor/{who}", json.dumps({"from": self.id, "rid": rid, **self.rumors[rid]}))
+```
 
-Before submitting:
-- [ ] Delete prep/instructions above
-- [ ] Add YOUR project documentation
-- [ ] Include photos/videos/diagrams  
-- [ ] Document user testing with non-team members
-- [ ] Add reflection on learnings
-- [ ] List team names at top
+**What it looks like in practice.** This is part of the log from pi-jacey during a run with all three Pis. Rumors arrive with their source, and a second-hand rumor says who it came from. When Edmond's sensor spots an eavesdropper, all three Pis switch to small talk, and the rumors held back during the hush arrive once the coast is clear:
 
-**Your README = story of what YOU built!**
+```
+[22:07:20] pi-jacey: psst, pi-gabi just told me the projector pretends to be broken on Mondays
+[22:07:29] pi-jacey: ooh, I just heard the thermostat and the window are not speaking anymore
+[22:07:38] pi-jacey: psst, pi-edmond just told me the speaker has been practicing its singing at night
+[22:07:55] pi-edmond: shh! someone's listening.
+[22:07:55] pi-jacey: anyway, I love processing data.
+[22:07:55] pi-gabi: so... nice weather today.
+[22:08:20] pi-edmond: coast is clear.
+[22:08:21] pi-jacey: psst, pi-gabi just told me the smart fridge has been reading everyone's grocery lists
+[22:08:29] pi-jacey: psst, pi-gabi just told me someone saw the printer jam on purpose (they heard it from pi-edmond)
+```
 
----
+### User Testing
 
-Resources: [MQTT Guide](https://www.hivemq.com/mqtt-essentials/) | [Paho Python](https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php) | [Flask-SocketIO](https://flask-socketio.readthedocs.io/)
+We tested Gossiping Pis with three people outside our team.
+
+#### Tester 1: Irene
+
+<img src="imgs/test_irene.jpg" width="400">
+
+- **Before trying:** She expected the Pis to read her mind while she talked, picking up what she was thinking and how she felt, because it's sometimes hard to get a message across just by talking.
+- **What surprised her:** The "stop gossiping" moment, when an eavesdropper makes the Pis go quiet. She asked how we came up with it, since in real life people who are gossiping don't know how to stop.
+- **What she would change:** She found the interaction fun but asked what the point of it was, and suggested turning it into a board game.
+
+#### Tester 2: Serena
+
+<img src="imgs/test_serena.jpg" width="400">
+
+- **Before trying:** She was confused about how it worked. It wasn't clear how her message would be sent, so she ended up not saying anything.
+- **What surprised her:** How fast the messages traveled between the Pis.
+- **What she would change:** She wasn't sure this would work as a real interaction, because tapping the sensor to send a message felt unnatural.
+
+#### Tester 3: Yuki
+
+<img src="imgs/test_yuki.jpg" width="400">
+
+- **Before trying:** They had no idea how a message would get to the machines, and thought they would have to say something. It turned out only the machines talk.
+- **What surprised them:** The devices really did gossip with each other, passing rumors along as quickly as people would. They found it interesting even just to watch.
+- **What they would change:** The screen was too small to follow the conversation, and the messages scrolled by too fast.
+
+#### What we learned from testing
+
+Each tester pointed at a different part of the design:
+
+- **Meaning (Irene):** the system is fun to watch, but it doesn't give people a goal. Adding scoring rules, like a spy player who tries to "catch" a rumor while it's spreading, could turn it into a game.
+- **Trigger (Serena):** tapping a sensor doesn't match anything people do in daily life. Two testers also expected to speak to the Pis before trying, which suggests voice would feel like a more natural way to start a rumor. This led to our iteration below.
+- **Display (Yuki):** every screen shows all three Pis' lines, and the idle reactions (`no way!`, `mm-hmm`) come up often, so the real rumors get lost. We could lower how often the idle reactions appear, rely more on the speaker, or show the full conversation on a laptop through the MQTT viewer.
+
+### Iteration: Adding a Microphone
+
+**Storyboard (second version)**
+
+<img src="imgs/storyboard_v2.jpg" width="700">
+
+After user testing, we redrew the storyboard around voice. Johnny has something to share, so he hovers over the sensor and speaks into the microphone on his Pi. The message goes into the central channel, every friend's Pi receives it, and people keep talking over the channel.
+
+**What we built**
+
+<img src="imgs/pi_mic.jpg" width="400">
+
+We added a USB microphone to the Pi and a `--mic` option to `gossip.py`. When people talk near a Pi, it "overhears" something and starts a new rumor, which then spreads to the other Pis as before. In this version the Pi only measures how loud the room is. It doesn't record or transcribe speech, so the rumor text still comes from our list or the local Qwen model. Turning the speech itself into the rumor, as the storyboard shows, is the next step.
+
+```python
+if loudness(data) >= self.mic_threshold:
+    loud_times.append(now)
+loud_times = [t for t in loud_times if now - t <= MIC_WINDOW]
+if len(loud_times) * MIC_CHUNK >= MIC_TALK:   # about 0.6 s of talking within 2 s
+    self.start_rumor()
+```
+
+Because all three Pis sit in the same room, their own voices could set each other off in an endless loop. To prevent that, the mic is ignored for 4 seconds after any Pi says something, and there are at least 10 seconds between mic-triggered rumors. The VCNL4040 still detects eavesdroppers, so leaning in still makes the whole group go quiet.
+
+```bash
+python gossip.py --mic-calibrate --mic-device plughw:2,0   # pick a threshold between quiet and talking
+python gossip.py --name pi-jacey --mic --mic-device plughw:2,0 --mic-threshold <number> ...
+```
+
+### Reflection
+
+**Reflection on the reading: The Presence Table**
+
+The Presence Table connects two households through a table whose surface lights up with a trace of people's gestures and the everyday objects placed on it. That trace is sent over the network to a linked table in the other home, so each family gets an ambient sense that the other is there. Like our project, it is a set of devices on a network that react to what people do near them. The difference is where the person sits in the loop. On the Presence Table, people's own gestures are the content being shared. In Gossiping Pis, the Pis do all the talking and people mostly watch, except when they start a rumor or interrupt as an eavesdropper. The reading helped us see that gap, and it points to the direction we would take next: letting people's presence and voice become part of what gets passed around.
+
+**What worked well**
+
+The Pis respond very quickly. A rumor started on one Pi shows up on the others within seconds, and all three go quiet at almost the same moment when someone leans in. That speed is what makes the interaction feel like real gossip, as if three friends were whispering right in front of you. Testers noticed this too: Serena and Yuki were both surprised by how fast the messages traveled.
+
+**Challenges with distributed interaction**
+
+- Every sensor reads a little differently, so each Pi needs its own threshold. On pi-jacey, a hand had to be within about 3 cm before the reading rose above the noise.
+- With three Pis talking in one room, there is a lot of output. Every screen shows all three Pis' lines, which made the small screen hard to follow (Yuki's feedback).
+- Adding the microphone created a new problem: the Pis' own voices could trigger each other in a loop, so we had to ignore the mic right after any Pi speaks.
+
+**How sensor events worked**
+
+The VCNL4040 gives a single number, but timing turns it into two events: a quick tap (under 1.5 s) starts a rumor, and staying close (1.5 s or more) is an eavesdropper. The microphone adds a third event: about 0.6 s of talking within 2 s starts a rumor.
+
+**What we would improve**
+
+Right now the person is mostly a spectator. The Pis gossip with each other, and people only start or interrupt the conversation. We would like the person to take part more. For example, transcribing what someone says so their own words become the rumor (as our second storyboard shows), or adding game rules where a "spy" player tries to catch a rumor while it spreads, as Irene suggested. We would also move the full conversation to the speaker or a larger display and keep the small screen for showing each Pi's mood.
+
+**Where computation happens, and why**
+
+All of the logic runs on each Pi in `gossip.py`: reading the sensor, deciding tap vs. linger, tracking which rumors each Pi knows, and drawing the screen. The MQTT broker only relays messages, so any Pi on campus Wi-Fi can join, and no Pi is in charge. The language model (Qwen through Ollama) also runs locally on each Pi, but only when the starter rumor list runs out, not on every sensor event. Generating a rumor takes several seconds on a Pi, so calling it on every tap would make the interaction feel slow. Using the written list first keeps the common case fast.

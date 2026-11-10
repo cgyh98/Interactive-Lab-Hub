@@ -78,6 +78,7 @@ LISTENER_GONE_AFTER = 2.5  # seconds with nobody close before gossip resumes
 HUSH_AFTER = 1.5  # something close this long = eavesdropper; shorter = a tap that starts a rumor
 MIN_TAP = 0.1  # ignore single noisy readings shorter than this
 LEFT_AFTER = 0.3  # below threshold this long = the hand/person has really moved away
+CHATTER_CHANCE = 0.03  # chance per second of an idle reaction ("no way!"); was 0.08, lowered after user testing
 
 STARTER_RUMORS = [
     "the router has been talking to someone else's laptop",
@@ -126,6 +127,7 @@ class GossipNode:
 
         self.use_vcnl = not args.no_sensor
         self.listen_threshold = args.listen_threshold
+        self.chatter = args.chatter
         self.someone_listening = False  # our own sensor sees a person close
         self.peer_hush = {}  # peer_id -> True if their sensor sees a person
         self.prev_peer_hush = False
@@ -384,7 +386,7 @@ class GossipNode:
 
             # idle chatter when everyone's caught up and nobody's listening
             if (self.together and not self.is_quiet()
-                    and time.time() - self.last_new_rumor > 15 and random.random() < 0.08):
+                    and time.time() - self.last_new_rumor > 15 and random.random() < self.chatter):
                 self.say(random.choice(REACTIONS))
             await asyncio.sleep(1)
 
@@ -593,6 +595,8 @@ def main():
                    help=f"Ollama model for new rumors (default {OLLAMA_MODEL}, or set OLLAMA_MODEL)")
     p.add_argument("--listen-threshold", type=int, default=30,
                    help="VCNL4040 proximity reading that counts as 'something is close' (see --calibrate)")
+    p.add_argument("--chatter", type=float, default=CHATTER_CHANCE,
+                   help=f"chance per second of an idle reaction (default {CHATTER_CHANCE}; the original was 0.08)")
     p.add_argument("--calibrate", action="store_true", help="print VCNL4040 readings and exit")
     p.add_argument("--speak", action="store_true", help="say lines out loud with espeak-ng")
     p.add_argument("--voice", default="en", help="espeak-ng voice, e.g. en+f3, en+m2, es")
