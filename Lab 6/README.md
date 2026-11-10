@@ -4,6 +4,7 @@
 - Edmond Kong (eck67, edmkong)
 - Jacey Hu (ch2296, kakiko1111)
 - Gabriela Yaulli (cgy4, cgyh98)
+- Andreas Kilbinger (awk84, )
 
 **Demo video:** [Watch Gossiping Pis on Google Drive](https://drive.google.com/file/d/1-fGIk0lGZlaCoq7OVxLD7pXoxYfurYXl/view?usp=sharing)
 
